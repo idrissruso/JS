@@ -84,10 +84,70 @@ const disTransactions = function (mvs) {
       i + 1
     } ${type}</div>
           <div class="movements__date">3 days ago</div>
-          <div class="movements__value">${mv}</div>
+          <div class="movements__value">${mv}€</div>
         </div>`;
     containerMovements.insertAdjacentHTML('afterbegin', html);
   }
 };
 
 disTransactions(movements);
+
+/////////////////////////////////////////////////
+const calculateNames = function (accs) {
+  accs.forEach(function (acc, i) {
+    acc.userName = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+
+const calDisplayBal = function (movements) {
+  const balance = movements.reduce((acc, move) => acc + move, 0);
+  labelBalance.textContent = `${balance} €`;
+};
+
+calDisplayBal(account1.movements);
+
+/////////////////////////////
+//const calMax = function (movements) {
+//  const max = movements.reduce(
+//    (acc, move) => (acc > move ? acc : move),
+//    movements[0]
+//  );
+//  console.log(max);
+//};
+//
+//calMax(account1.movements);
+
+/////////////////////////////////////////////////
+const calcDisplaySummaries = function (movements) {
+  const sumIn = movements
+    .filter(mov => mov > 0)
+    .reduce((acc, mv) => acc + mv, 0);
+  console.log(sumIn);
+  const sumOut = movements
+    .filter(movement => movement < 0)
+    .reduce((acc, mv) => acc + mv, 0);
+  labelSumOut.textContent = `${sumOut}€`;
+  labelSumIn.textContent = `${sumIn}€`;
+  const interest = movements
+    .filter(movement => movement > 0)
+    .map(movement => (movement * 1.2) / 100)
+    .filter(movement => movement > 1)
+    .reduce((acc, mv) => acc + mv, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+
+calcDisplaySummaries(account1.movements);
+
+/////////////////////////////////////////////////
+//handle login
+let loggedInAccount;
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+  const username = inputLoginUsername.value;
+  const pin = inputLoginPin.value;
+  loggedInAccount = accounts.find(account => account.userName === username);
+});
