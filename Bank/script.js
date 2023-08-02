@@ -191,6 +191,20 @@ btnClose.addEventListener('click', e => {
   }
 });
 
+//handle loan
+btnLoan.addEventListener('click', e => {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (
+    amount > 0 &&
+    loggedInAccount.movements.some(mov => mov >= amount * 0.1)
+  ) {
+    loggedInAccount.movements.push(amount);
+    updateUI(loggedInAccount);
+    inputLoanAmount.value = '';
+  }
+});
+
 //update UI
 const updateUI = function (acc) {
   disTransactions(acc);
