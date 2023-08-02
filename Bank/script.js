@@ -137,7 +137,7 @@ const calcDisplaySummaries = function (acc) {
   labelSumInterest.textContent = `${interest}€`;
 };
 
-/////////////////////////////////////////////////
+///////////////////Event Handlers/////////////////////
 //handle login
 let loggedInAccount;
 btnLogin.addEventListener('click', e => {
@@ -173,6 +173,21 @@ btnTransfer.addEventListener('click', e => {
     loggedInAccount.movements.push(-amount);
     receiver.movements.push(amount);
     updateUI(loggedInAccount);
+  }
+});
+
+// handle close account
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+  if (
+    inputCloseUsername.value === loggedInAccount.userName &&
+    Number(inputClosePin.value) === loggedInAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      account => account.userName === loggedInAccount.userName
+    );
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
   }
 });
 
