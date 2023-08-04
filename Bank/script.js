@@ -101,6 +101,13 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const format = {
+  hour: 'numeric',
+  minute: 'numeric',
+  day: 'numeric',
+  month: 'numeric',
+  year: 'numeric',
+};
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -122,7 +129,7 @@ const disTransactions = function (acc, sort = false) {
     : acc.movements;
   for (const [i, mv] of mvs.entries()) {
     const date = new Date(acc.movementsDates[i]);
-    const displayDate = getDateWithStr(date);
+    const displayDate = pastDate(date);
 
     let type = mv > 0 ? 'deposit' : 'withdrawal';
     let html = `<div class="movements__row">
@@ -185,20 +192,25 @@ const calcDisplaySummaries = function (acc) {
 
 const getDate = function () {
   const now = new Date();
-  const day = `${now.getDate()}`.padStart(2, 0);
-  const month = `${now.getMonth() + 1}`.padStart(2, 0);
-  const year = now.getFullYear();
-  const hour = `${now.getHours()}`.padStart(2, 0);
-  const min = `${now.getMinutes()}`.padStart(2, 0);
-  return `${day}/${month}/${year}, ${hour}:${min}`;
+  const day = new Intl.DateTimeFormat('en-US', format).format(now);
+  return day;
 };
 
 const getDateWithStr = function (dateIsStr) {
   const now = new Date(dateIsStr);
-  const day = `${now.getDate()}`.padStart(2, 0);
-  const month = `${now.getMonth() + 1}`.padStart(2, 0);
-  const year = now.getFullYear();
-  return `${day}/${month}/${year}`;
+  const day = new Intl.DateTimeFormat('en-US', format).format(now);
+  return day;
+};
+
+const pastDate = function (date) {
+  const now = new Date();
+  const date_ = new Date(date);
+  const diff = now - date_;
+  const day = Math.trunc(diff / (1000 * 60 * 60 * 24));
+  if (day === 0) return 'Today';
+  if (day === 1) return 'Yesterday';
+  if (day <= 7) return `${day} days ago`;
+  return getDateWithStr(date);
 };
 
 ///////////////////Event Handlers/////////////////////
