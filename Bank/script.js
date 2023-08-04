@@ -161,17 +161,6 @@ const calDisplayBal = function (acc) {
 
 calculateNames(accounts);
 
-/////////////////////////////
-//const calMax = function (movements) {
-//  const max = movements.reduce(
-//    (acc, move) => (acc > move ? acc : move),
-//    movements[0]
-//  );
-//  console.log(max);
-//};
-//
-//calMax(account1.movements);
-
 /////////////////////////////////////////////////
 const calcDisplaySummaries = function (acc) {
   const sumIn = acc.movements
@@ -215,7 +204,7 @@ const pastDate = function (date) {
 
 ///////////////////Event Handlers/////////////////////
 //handle login
-let loggedInAccount;
+let loggedInAccount, timer;
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
   const username = inputLoginUsername.value;
@@ -230,6 +219,7 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
     updateUI(loggedInAccount);
+    startTimer();
   }
 });
 
@@ -296,23 +286,40 @@ btnSort.addEventListener('click', e => {
 
 //update UI
 const updateUI = function (acc) {
+  if (timer) {
+    clearInterval(timer);
+    startTimer();
+  }
   disTransactions(acc);
   calDisplayBal(acc);
   calcDisplaySummaries(acc);
 };
 
-//const calcALLMovements = function (accs) {
-//  const allMovements = accs.flatMap(acc => acc.movements);
-//  console.log(allMovements);
-//  const balance = allMovements.reduce((acc, mov) => acc + mov, 0);
-//  console.log(balance);
-//};
-//calcALLMovements(accounts);
+//setInterval(clock, 1000);
+const startTimer = function () {
+  let time = 300;
+  const tick = function () {
+    const min = String(Math.trunc(time / 60)).padStart(2, '0');
+    const sec = String(time % 60).padStart(2, '0');
+    labelTimer.textContent = `${min}:${sec}`;
+    if (time === 0) {
+      clearInterval(timer);
+      logout();
+    }
+    time--;
+  };
 
-//labelWelcome.addEventListener('click', () => {
-//  const movements = Array.from(
-//    document.querySelectorAll('.movements__value'),
-//    el => Number(el.textContent.replace('€', ''))
-//  );
-//  console.log(movements);
-//});
+  tick(); // Initial call to display the time immediately
+
+  // Start the timer and store the interval ID in the timer variable
+  const timer = setInterval(tick, 1000);
+  return timer; // Return the interval ID
+};
+
+const logout = function () {
+  containerApp.style.opacity = 0;
+  labelWelcome.textContent = 'Log in to get started';
+  clearInterval(timer);
+};
+
+const clearTimer = function () {};
