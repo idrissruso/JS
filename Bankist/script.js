@@ -16,6 +16,11 @@ const tabs = document.querySelectorAll('.operations__tab');
 const options = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
 const sections = document.querySelectorAll('.section');
+const images = document.querySelectorAll('img[data-src]');
+const slider = document.querySelector('.slider');
+const slides = document.querySelectorAll('.slide');
+const previousBtn = document.querySelector('.slider__btn--left');
+const nextBtn = document.querySelector('.slider__btn--right');
 
 const openModal = function (e) {
   e.preventDefault();
@@ -104,6 +109,7 @@ const handleSections = function (entries, observer) {
   const [entry] = entries;
   if (!entry.isIntersecting) return;
   entry.target.classList.remove('section--hidden');
+  observer.unobserve(entry.target);
 };
 
 const sectionsObserver = new IntersectionObserver(handleSections, {
@@ -115,3 +121,52 @@ sections.forEach(function (sec) {
   sec.classList.add('section--hidden');
   sectionsObserver.observe(sec);
 });
+
+const handleImgLoading = function (entries, observer) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
+  entry.target.addEventListener('load', function (e) {
+    entry.target.classList.remove('lazy-img');
+  });
+};
+
+const imgLoadObserver = new IntersectionObserver(handleImgLoading, {
+  root: null,
+  threshold: 0,
+});
+
+images.forEach(img => imgLoadObserver.observe(img));
+
+let currentSlide = 0;
+const maxSlides = slides.length - 1;
+
+const organizeSlide = c => {
+  slides.forEach((s, i) => {
+    const coordinate = 100 * (i - c);
+    s.style.transform = `translateX(${coordinate}%)`;
+  });
+};
+
+organizeSlide(0);
+
+const nextSlit = () => {
+  if (currentSlide === maxSlides) {
+    currentSlide = 0;
+  } else {
+    currentSlide++;
+  }
+  organizeSlide(currentSlide);
+};
+
+const previousSlit = () => {
+  if (currentSlide === 0) {
+    currentSlide = maxSlides;
+  } else {
+    currentSlide--;
+  }
+  organizeSlide(currentSlide);
+};
+
+nextBtn.addEventListener('click', nextSlit);
+previousBtn.addEventListener('click', previousSlit);
